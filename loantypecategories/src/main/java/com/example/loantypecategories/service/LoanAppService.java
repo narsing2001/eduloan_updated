@@ -48,8 +48,7 @@ public class LoanAppService {
         // Additional 0.5% discount for female candidates on top of the base discounted rate
         boolean femaleDiscount = (request.getGender() == Gender.FEMALE);
         if (femaleDiscount) {
-            interestRate = interestRate.subtract(FEMALE_EXTRA_DISCOUNT)
-                    .setScale(2, RoundingMode.HALF_UP);
+            interestRate = interestRate.subtract(FEMALE_EXTRA_DISCOUNT).setScale(2, RoundingMode.HALF_UP);
         }
 
         // Approved amount = min(requested, strategy max cap)

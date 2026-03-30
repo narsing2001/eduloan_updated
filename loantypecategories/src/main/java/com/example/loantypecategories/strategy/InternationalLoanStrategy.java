@@ -6,10 +6,14 @@ import com.example.loantypecategories.entity.LoanApplication;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class InternationalLoanStrategy implements LoanInterestStrategy {
 
+    private static final BigDecimal MIN_RATE = new BigDecimal("10.00");
+    private static final BigDecimal MAX_RATE = new BigDecimal("15.00");
+    private static final BigDecimal FEMALE_DISCOUNT = new BigDecimal("1.00");
     private static final BigDecimal INTERNATIONAL_MALE_INTEREST_RATE   = new BigDecimal("15.00");
     private static final BigDecimal INTERNATIONAL_FEMALE_INTEREST_RATE = new BigDecimal("10.00");
     private static final BigDecimal INTERNATIONAL_OTHER_INTEREST_RATE  = new BigDecimal("13.00");
@@ -27,11 +31,28 @@ public class InternationalLoanStrategy implements LoanInterestStrategy {
 
     @Override
     public BigDecimal calculateInterestRate(LoanApplicationRequestDTO request) {
-        return switch (request.getGender()) {
-            case MALE   -> INTERNATIONAL_MALE_INTEREST_RATE ;
-            case FEMALE -> INTERNATIONAL_FEMALE_INTEREST_RATE ;
-            case OTHER  -> INTERNATIONAL_OTHER_INTEREST_RATE ;
-        };
+//        return switch (request.getGender()) {
+//            case MALE   -> INTERNATIONAL_MALE_INTEREST_RATE ;
+//            case FEMALE -> INTERNATIONAL_FEMALE_INTEREST_RATE ;
+//            case OTHER  -> INTERNATIONAL_OTHER_INTEREST_RATE ;
+//        };
+        // Generate a random rate between 10 and 15
+        double randomRate = ThreadLocalRandom.current().nextDouble(
+                MIN_RATE.doubleValue(), MAX_RATE.doubleValue() + 0.01
+        );
+        BigDecimal rate = BigDecimal.valueOf(randomRate).setScale(2, RoundingMode.HALF_UP);
+
+        // Apply special discount for female applicants
+        if (request.getGender() == com.example.loantypecategories.constant.Gender.FEMALE) {
+            rate = rate.subtract(FEMALE_DISCOUNT);
+            if (rate.compareTo(MIN_RATE) < 0) {
+                rate = MIN_RATE; // clamp to minimum
+            }
+            //application.setFemaleDiscountApplied(true); // track discount in entity if field exists
+        }
+        return rate;
+
+
     }
 
     @Override

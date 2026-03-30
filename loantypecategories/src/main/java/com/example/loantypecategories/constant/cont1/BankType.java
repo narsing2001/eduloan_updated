@@ -26,10 +26,4 @@ public enum BankType {
         this.governmentBank = governmentBank;
     }
 
-    /**
-     * Government banks typically offer lower interest rates and better subsidy options
-     */
-    public boolean isGovernmentBank() {
-        return governmentBank;
-    }
 }

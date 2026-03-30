@@ -6,12 +6,18 @@ import com.example.loantypecategories.exception.InstituteNotApprovedException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DomesticLoanStrategy implements LoanInterestStrategy {
 
     private static final BigDecimal DOMESTIC_LOAN_MALE_INTEREST_RATE   = new BigDecimal("12.00");
     private static final BigDecimal DOMESTIC_LOAN_FEMALE_INTEREST_RATE = new BigDecimal("9.00");
     private static final BigDecimal OTHER_INTEREST_RATE  = new BigDecimal("11.00");
+
+    private static final BigDecimal MIN_RATE = new BigDecimal("9.00");
+    private static final BigDecimal MAX_RATE = new BigDecimal("12.00");
+    private static final BigDecimal FEMALE_DISCOUNT = new BigDecimal("1.00"); // 1% discount
+
 
     private static final int MAX_TENURE_YEARS = 15;
 
@@ -25,11 +31,25 @@ public class DomesticLoanStrategy implements LoanInterestStrategy {
 
     @Override
     public BigDecimal calculateInterestRate(LoanApplicationRequestDTO request) {
-        return switch (request.getGender()) {
-            case MALE   -> DOMESTIC_LOAN_MALE_INTEREST_RATE ;
-            case FEMALE -> DOMESTIC_LOAN_FEMALE_INTEREST_RATE;
-            case OTHER  -> OTHER_INTEREST_RATE;
-        };
+//        return switch (request.getGender()) {
+//            case MALE   -> DOMESTIC_LOAN_MALE_INTEREST_RATE ;
+//            case FEMALE -> DOMESTIC_LOAN_FEMALE_INTEREST_RATE;
+//            case OTHER  -> OTHER_INTEREST_RATE;
+//        };
+        // Generate a random rate between 9 and 12
+        double randomRate = ThreadLocalRandom.current().nextDouble(
+                MIN_RATE.doubleValue(), MAX_RATE.doubleValue() + 0.01
+        );
+        BigDecimal rate = BigDecimal.valueOf(randomRate).setScale(2, RoundingMode.HALF_UP);
+
+        // Apply special discount for female applicants
+        if (request.getGender() == com.example.loantypecategories.constant.Gender.FEMALE) {
+            rate = rate.subtract(FEMALE_DISCOUNT);
+            if (rate.compareTo(MIN_RATE) < 0) {
+                rate = MIN_RATE; // clamp to minimum
+            }
+        }
+        return rate;
     }
 
     @Override

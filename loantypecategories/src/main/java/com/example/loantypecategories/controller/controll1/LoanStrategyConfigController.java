@@ -22,10 +22,8 @@ public class LoanStrategyConfigController {
 
     @GetMapping("/exact")
     public ResponseEntity<LoanStrategyConfig> getExactConfig(
-            @RequestParam BankType bankType,
-            @RequestParam LoanType loanType,
-            @RequestParam CourseType courseType,
-            @RequestParam Gender gender) {
+            @RequestParam BankType bankType, @RequestParam LoanType loanType,
+            @RequestParam CourseType courseType, @RequestParam Gender gender) {
         return ResponseEntity.ok(service.getExactConfig(bankType, loanType, courseType, gender));
     }
 
