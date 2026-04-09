@@ -63,14 +63,12 @@ public class LoanApplicationController {
             return ResponseEntity.ok(service.getByCourseType(courseType));
         }
 
-
         return ResponseEntity.ok(service.getAll());
     }
 
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<LoanApplicationResponseDTO> updateStatus(
-            @PathVariable Long id, @RequestBody StatusUpdateRequest body) {
+    public ResponseEntity<LoanApplicationResponseDTO> updateStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest body) {
 
         return ResponseEntity.ok(service.updateStatus(id, body.status()));
     }
